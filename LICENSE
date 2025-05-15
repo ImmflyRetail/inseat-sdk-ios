@@ -1,24 +1,68 @@
-This is free and unencumbered software released into the public domain.
+### PROPRIETARY SDK LICENSE AGREEMENT (EULA)
 
-Anyone is free to copy, modify, publish, use, compile, sell, or
-distribute this software, either in source code form or as a compiled
-binary, for any purpose, commercial or non-commercial, and by any
-means.
+**Last updated:** 14/05/2025
 
-In jurisdictions that recognize copyright laws, the author or authors
-of this software dedicate any and all copyright interest in the
-software to the public domain. We make this dedication for the benefit
-of the public at large and to the detriment of our heirs and
-successors. We intend this dedication to be an overt act of
-relinquishment in perpetuity of all present and future rights to this
-software under copyright law.
+This End User License Agreement ("Agreement") is a legal agreement between you ("Licensee") and **Immfly SL** ("Licensor") for access and use of the **\[SDK Name]** ("SDK").
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
-OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+By downloading, accessing, or using the SDK, you agree to be bound by the terms of this Agreement.
 
-For more information, please refer to <https://unlicense.org>
+---
+
+### 1. LICENSE GRANT
+
+Licensor grants Licensee a non-exclusive, non-transferable, revocable license to use the SDK **only in connection with a valid and authorized access token** issued by Licensor.
+
+---
+
+### 2. RESTRICTIONS
+
+Licensee shall not:
+
+* Use the SDK without a valid access token;
+* Modify, reverse engineer, decompile, or disassemble the SDK;
+* Distribute, sublicense, rent, lease, or disclose the SDK to any third party;
+* Use the SDK to build a competing service or product.
+
+---
+
+### 3. OWNERSHIP
+
+The SDK is licensed, not sold. All rights, title, and interest in and to the SDK, including all intellectual property rights, remain with Immfly SL.
+
+---
+
+### 4. ACCESS CONTROL
+
+Access to the SDK is governed by token-based authentication. Licensor reserves the right to revoke access at any time for breach of this Agreement or other authorized use policies.
+
+---
+
+### 5. TERM AND TERMINATION
+
+This Agreement is effective until terminated. Licensor may terminate this Agreement immediately if Licensee violates any term. Upon termination, Licensee must cease all use and delete all copies of the SDK.
+
+---
+
+### 6. NO WARRANTY
+
+The SDK is provided "AS IS" without warranties of any kind, express or implied, including without limitation warranties of merchantability or fitness for a particular purpose.
+
+---
+
+### 7. LIMITATION OF LIABILITY
+
+In no event shall Licensor be liable for any indirect, incidental, special, or consequential damages arising out of the use or inability to use the SDK.
+
+---
+
+### 8. GOVERNING LAW
+
+This Agreement shall be governed by and construed in accordance with the laws of \[Your Jurisdiction].
+
+---
+
+### 9. CONTACT
+
+For questions about this Agreement, contact:
+Immfly SL
+info@immfly.com
