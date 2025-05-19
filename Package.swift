@@ -23,7 +23,7 @@ let package = Package(
                 .target(name: "InseatFramework"),
                 .product(name: "DittoSwift", package: "DittoSwiftPackage")
             ]
-        )
+        ),
         .binaryTarget(
             name: "InseatFramework",
             url: "https://inseat.immflyretail.link/inseat-ios-sdk/1.0.0/Inseat.xcframework.zip",
