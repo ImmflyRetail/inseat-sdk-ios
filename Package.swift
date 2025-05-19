@@ -10,7 +10,7 @@ let package = Package(
         .library(
             name: "Inseat", 
             targets: [
-                "Inseat"
+                "InseatWrapper"
             ]
         )
     ],
@@ -19,7 +19,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "Inseat",
+            name: "InseatWrapper",
             dependencies: [
                 .target(name: "InseatFramework"),
                 .product(name: "DittoSwift", package: "DittoSwiftPackage")
