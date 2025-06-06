@@ -1,4 +1,450 @@
-# Overview & Setup    
+# Inseat iOS SDK Documentation
+
+This document provides comprehensive documentation for the Inseat iOS SDK methods and errors.
+
+## Table of Contents
+
+- [Initialization Methods](#initialization-methods)
+- [Synchronization Methods](#synchronization-methods)
+- [Data Management Methods](#data-management-methods)
+- [Shop Information Methods](#shop-information-methods)
+- [Product Management Methods](#product-management-methods)
+- [Order Management Methods](#order-management-methods)
+- [Permission Methods](#permission-methods)
+- [Error Types](#error-types)
+- [Data Models](#data-models)
+- [Installing Package Dependency](#installing-package-dependency)
+- [Configuring Permissions](#configuring-permissions)
+- [Public Interface](#public-interface)
+
+---
+
+## SDK Methods Summary
+
+| Method Name        | Description                                                             |
+| ------------------ | ----------------------------------------------------------------------- |
+| `initialize`       | Initializes the Inseat SDK with configuration parameters                |
+| `start`            | Starts syncing data with POS devices via BLE mesh network               |
+| `stop`             | Stops syncing data with POS devices and shuts down the SDK service      |
+| `syncProductData`  | Downloads and caches product data from the server API                   |
+| `setUserData`      | Sets the selected menu for filtering products                           |
+| `observeShop`      | Subscribes to shop status updates and receives real-time notifications  |
+| `fetchShop`        | Fetches shop data once (one-time operation)                             |
+| `fetchMenus`       | Fetches available shop menus once                                       |
+| `fetchCategories`  | Fetches available shop categories once                                  |
+| `observeProducts`  | Subscribes to product updates and receives real-time notifications      |
+| `fetchProducts`    | Fetches available shop products once                                    |
+| `createOrder`      | Creates an order and sends it to the POS application                    |
+| `observeOrders`    | Subscribes to order status updates and receives real-time notifications |
+| `cancelOrder`      | Cancels an existing order and sends information to the POS application  |
+| `checkPermissions` | Checks if the SDK has necessary permissions to operate                  |
+
+## Initialization Methods
+
+### `initialize`
+
+**Description:** Initializes the Inseat SDK with the provided configuration parameters. This method should be called when the app is launched.
+
+**Signature:**
+
+```swift
+func initialize(configuration: Configuration) throws
+```
+
+**Parameters:**
+
+- `configuration` - Configuration object containing `apiKey` and `orderConfirmationTimeoutInSeconds`
+
+**Return Type:** `Void` (throws on error)
+
+**Errors:** `InseatError.initializationError(.initializationFailure)`, `InseatError.initializationError(.internalConfigurationFailure)`
+
+---
+
+## Synchronization Methods
+
+### `start`
+
+**Description:** Starts syncing data with POS devices via BLE mesh network.
+
+**Signature:**
+
+```swift
+func start() throws
+```
+
+**Return Type:** `Void` (throws on error)
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.synchronizationError(.syncActivationFailure)`, `InseatError.synchronizationError(.subscriptionRegistrationFailure)`, `InseatError.initializationError(.tombstonesActivationFailure)`
+
+### `stop`
+
+**Description:** Stops syncing data with POS devices and shuts down the SDK service.
+
+**Signature:**
+
+```swift
+func stop()
+```
+
+**Return Type:** `Void`
+
+**Errors:** None
+
+---
+
+## Data Management Methods
+
+### `syncProductData`
+
+**Description:** Downloads and caches product data from the server API.
+
+**Signature:**
+
+```swift
+func syncProductData(completion: ((Result<Void, InseatError>) -> Void)?)
+```
+
+**Parameters:**
+
+- `completion` - Optional callback with result
+
+**Return Type:** `Void` (result via completion callback)
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.networkError(.downloadFailure)`, `InseatError.serializationError(.decodingFailure)`
+
+### `setUserData`
+
+**Description:** Sets the selected menu for filtering products.
+
+**Signature:**
+
+```swift
+func setUserData(_ userData: UserData)
+```
+
+**Parameters:**
+
+- `userData` - UserData object containing menu selection
+
+**Return Type:** `Void`
+
+**Errors:** None
+
+---
+
+## Shop Information Methods
+
+### `observeShop`
+
+**Description:** Subscribes to shop status updates and receives real-time notifications.
+
+**Signature:**
+
+```swift
+func observeShop(observer: @escaping (Shop?) -> Void) throws -> Observer
+```
+
+**Parameters:**
+
+- `observer` - Callback function triggered when shop object is updated
+
+**Return Type:** `Observer` - Observer instance that must be retained in memory
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.observerRegistrationError)`
+
+### `fetchShop`
+
+**Description:** Fetches shop data once (one-time operation).
+
+**Signature:**
+
+```swift
+func fetchShop() async throws -> Shop?
+```
+
+**Return Type:** `Shop?` - Optional Shop object
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.fetchingError)`
+
+### `fetchMenus`
+
+**Description:** Fetches available shop menus once.
+
+**Signature:**
+
+```swift
+func fetchMenus() async throws -> [Menu]
+```
+
+**Return Type:** `[Menu]` - Array of Menu objects
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.fetchingError)`
+
+### `fetchCategories`
+
+**Description:** Fetches available shop categories once.
+
+**Signature:**
+
+```swift
+func fetchCategories() async throws -> [Category]
+```
+
+**Return Type:** `[Category]` - Array of Category objects
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.fetchingError)`
+
+---
+
+## Product Management Methods
+
+### `observeProducts`
+
+**Description:** Subscribes to product updates and receives real-time notifications.
+
+**Signature:**
+
+```swift
+func observeProducts(observer: @escaping ([Product]) -> Void) throws -> Observer
+```
+
+**Parameters:**
+
+- `observer` - Callback function triggered when products are updated (returns all products, not just updated ones)
+
+**Return Type:** `Observer` - Observer instance that must be retained in memory
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.observerRegistrationError)`
+
+### `fetchProducts`
+
+**Description:** Fetches available shop products once.
+
+**Signature:**
+
+```swift
+func fetchProducts() async throws -> [Product]
+```
+
+**Return Type:** `[Product]` - Array of Product objects
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.fetchingError)`
+
+---
+
+## Order Management Methods
+
+### `createOrder`
+
+**Description:** Creates an order and sends it to the POS application.
+
+**Signature:**
+
+```swift
+func createOrder(_ order: Order) async throws
+```
+
+**Parameters:**
+
+- `order` - Order object containing all order information
+
+**Return Type:** `Void` (throws on error)
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.insertError)`
+
+### `observeOrders`
+
+**Description:** Subscribes to order status updates and receives real-time notifications.
+
+**Signature:**
+
+```swift
+func observeOrders(observer: @escaping ([Order]) -> Void) throws -> Observer
+```
+
+**Parameters:**
+
+- `observer` - Callback function triggered when orders are updated (returns all orders, not just updated ones)
+
+**Return Type:** `Observer` - Observer instance that must be retained in memory
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.observerRegistrationError)`
+
+### `cancelOrder`
+
+**Description:** Cancels an existing order and sends this information to the POS application.
+
+**Signature:**
+
+```swift
+func cancelOrder(id: Order.ID) async throws
+```
+
+**Parameters:**
+
+- `id` - Order ID (String type alias)
+
+**Return Type:** `Void` (throws on error)
+
+**Errors:** `InseatError.initializationError(.notInitialized)`, `InseatError.storeError(.updateError)`
+
+---
+
+## Permission Methods
+
+### `checkPermissions`
+
+**Description:** Checks if the SDK has the necessary permissions to operate (Bluetooth, Local Network).
+
+**Signature:**
+
+```swift
+func checkPermissions(options: PermissionCheckOptions = .default) async -> PermissionCheckResult
+```
+
+**Parameters:**
+
+- `options` - Permission check options (default: `.default`)
+
+**Return Type:** `PermissionCheckResult` - Result indicating success or failure with missing permissions
+
+**Errors:** None (returns result enum)
+
+---
+
+## Error Types
+
+### `InseatError`
+
+#### `initializationError(InitializationErrorReason)`
+
+- `.notInitialized` - SDK is not initialized
+- `.initializationFailure` - Failed to configure sync layer
+- `.internalConfigurationFailure` - Failed to configure internal components
+- `.tombstonesActivationFailure` - Failed to configure tombstones
+
+#### `synchronizationError(SynchronizationErrorReason)`
+
+- `.syncActivationFailure` - Failed to start sync
+- `.subscriptionRegistrationFailure` - Failed to register subscriptions
+
+#### `networkError(NetworkErrorReason)`
+
+- `.downloadFailure` - Data download attempt failed
+
+#### `storeError(StoreErrorReason)`
+
+- `.observerRegistrationError` - Failed to register observer
+- `.fetchingError` - Failed to fetch data
+- `.insertError` - Failed to insert data
+- `.updateError` - Failed to update data
+- `.deleteError` - Failed to delete data
+- `.evictError` - Failed to evict data
+
+#### `serializationError(SerializationErrorReason)`
+
+- `.resourceNotExist` - Resource not found
+- `.decodingFailure` - Failed to decode data
+
+---
+
+## Data Models
+
+### `Menu`
+
+Represents a menu item.
+
+- **key**: `String` — Unique identifier for the menu item.
+- **icao**: `String` — ICAO code.
+- **companyId**: `Int` — Company identifier.
+- **displayName**: `[DisplayName]` — List of display names for the menu item in different locales.
+
+### `DisplayName`
+
+- **locale**: `String` — Locale code (e.g., "en", "es").
+- **text**: `String` — Display name text in the specified locale.
+
+### `Order`
+
+Represents an order.
+
+- **id**: `String` — Unique identifier for the order.
+- **shiftId**: `String` — Shift identifier.
+- **seatNumber**: `String` — Seat number.
+- **status**: `Status` — Status of the order (`placed`, `received`, `preparing`, `cancelledByPassenger`, `cancelledByCrew`, `cancelledByTimeout`, `completed`).
+- **items**: `[Order.Item]` — List of order items.
+- **orderCurrency**: `String` — Currency code.
+- **totalPrice**: `Order.Price` — Total price.
+- **createdAt**: `Date` — Creation date.
+- **updatedAt**: `Date` — Last update date.
+
+### `Order.Item`
+
+- **id**: `Int` — Item identifier.
+- **name**: `String` — Item name.
+- **quantity**: `Int` — Quantity ordered.
+- **price**: `Order.Price` — Price per unit.
+
+### `Order.Price`
+
+- **amount**: `Decimal` — Price amount.
+
+### `Product`
+
+Represents a product.
+
+- **id**: `Int` — Product identifier.
+- **name**: `String` — Product name.
+- **quantity**: `Int` — Available quantity.
+- **image**: `UIImage?` — Product image.
+- **prices**: `[Product.Price]` — List of prices.
+- **categoryId**: `Int` — Category identifier.
+- **startDate**: `Date?` — Availability start date.
+- **endDate**: `Date?` — Availability end date.
+
+### `Product.Price`
+
+- **currencyCode**: `String` — Currency code.
+- **amount**: `Decimal` — Price amount.
+
+### `Category`
+
+Represents a category.
+
+- **categoryId**: `Int` — Category identifier.
+- **name**: `String` — Category name.
+- **sortOrder**: `Int?` — Sort order.
+- **subcategories**: `[Category]` — List of subcategories (recursive structure).
+
+### `Shop`
+
+Represents a shop.
+
+- **id**: `String` — Shop identifier.
+- **shiftId**: `String` — Shift identifier.
+- **status**: `Status` — Shop status (`open`, `order`, `closed`).
+- **createdAt**: `Date` — Creation date.
+- **crewLastSeen**: `Date?` — Last crew seen timestamp.
+
+### `UserData`
+
+Represents user data in the SDK.
+
+- **menu**: `Menu` — Currently selected menu for the user.
+
+### `Configuration`
+
+Represents SDK configuration.
+
+- **apiKey**: `String` — API key for authentication.
+- **orderConfirmationTimeoutInSeconds**: `TimeInterval` — Timeout for order operations (default: 120 seconds).
+
+### `Observer`
+
+Object that manages subscription lifecycle - must be retained in memory to continue receiving updates.
+
+---
 
 ## Installing Package Dependency
 
