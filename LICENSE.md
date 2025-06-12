@@ -1,4 +1,3 @@
-
 # END-USER LICENSE AGREEMENT
 
 This END-USER LICENSE AGREEMENT ("EULA") is a legal contract between **IMMFLY, S.L.**, (“**IMMFLY**”) a company incorporated and registered in Spain (B-66.155.979) which has its registered office at Calle Albert Einstein 1-3, 09840, Cornellà de Llobregat (Barcelona, Spain) and you (“**Licensee**”) the party using our Inseat Software Development Kit (“**SDK**”).
