@@ -53,7 +53,11 @@ func initialize(configuration: Configuration) throws
 
 **Parameters:**
 
-- `configuration` - Configuration object containing `apiKey` and `orderConfirmationTimeoutInSeconds`
+- `configuration` - Configuration object containing:
+  - `apiKey` - API key for authentication
+  - `supportedICAOs` - Array of supported ICAO codes (e.g. ["WZZ", "WAZZ"])
+  - `environment` - Environment type (`.test` or `.live`)
+  - `orderConfirmationTimeoutDelayInSeconds` - Timeout for order operations (default: 120 seconds)
 
 **Return Type:** `Void` (throws on error)
 
@@ -438,7 +442,16 @@ Represents user data in the SDK.
 Represents SDK configuration.
 
 - **apiKey**: `String` — API key for authentication.
+- **supportedICAOs**: `[String]` — Array of supported ICAO codes.
+- **environment**: `Environment` — Environment type (`.test` or `.live`).
 - **orderConfirmationTimeoutInSeconds**: `TimeInterval` — Timeout for order operations (default: 120 seconds).
+
+### `Environment`
+
+Represents the SDK environment.
+
+- **test**: Test environment
+- **live**: Production environment
 
 ### `Observer`
 
