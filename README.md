@@ -6,6 +6,7 @@ This document provides comprehensive documentation for the Inseat iOS SDK method
 
 - [Installing Package Dependency](#installing-package-dependency)
 - [Configuring Permissions](#configuring-permissions)
+- [Integration FAQ](#integration-faq)
 - [Initialization Methods](#initialization-methods)
 - [Synchronization Methods](#synchronization-methods)
 - [Data Management Methods](#data-management-methods)
@@ -98,6 +99,32 @@ Used Bluetooth LE accessories
 
 - If enabling the `Data Protection entitlement`, allow access after the end user has unlocked their device for the first time after a system restart by setting the entitlement to `NSFileProtectionCompleteUntilFirstUserAuthentication`.
 - For more information, see the official Apple documentation for [Data Protection Entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.developer.default-data-protection).
+
+---
+
+## Integration FAQ
+
+### How do I show previous orders after the app is relaunched?
+
+Orders are stored on the device, so they survive the app being closed or killed. To show them again when the app is reopened, including the ones still pending delivery, run the same start-up sequence as on the first launch:
+
+1. `initialize` the SDK.
+2. `start` the SDK. This restarts Ditto sync with the POS devices, so pending orders keep receiving status updates from the crew.
+3. Register `observeOrders` and keep the returned `Observer`. Its callback receives every order created on this device in the last 24 hours, including the ones placed before the app was closed.
+
+```swift
+try await InseatAPI.shared.initialize(configuration: configuration)
+try await InseatAPI.shared.start()
+ordersObserver = try InseatAPI.shared.observeOrders { orders in
+    // Show the orders, pending ones included
+}
+```
+
+Notes:
+
+- Keep a reference to the returned `Observer`. If it's released, the callback stops.
+- The 24-hour window is based on the order's original `createdAt`, counted back from when `observeOrders` is called.
+- Orders belong to the app's `identifierForVendor`. If the user uninstalls every app from your team, iOS resets it and the previous orders aren't shown anymore.
 
 ---
 
