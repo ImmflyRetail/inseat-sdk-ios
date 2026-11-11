@@ -2,6 +2,8 @@
 
 This document provides comprehensive documentation for the Inseat iOS SDK methods and errors.
 
+> **New to the SDK?** Start with the [Use Cases & FAQ](FAQ.md): step-by-step integration examples and answers to common questions.
+
 ## Table of Contents
 
 - [Installing Package Dependency](#installing-package-dependency)
@@ -15,7 +17,7 @@ This document provides comprehensive documentation for the Inseat iOS SDK method
 - [Product Management Methods](#product-management-methods)
 - [Order Management Methods](#order-management-methods)
 - [Promotion Management Methods](#promotion-management-methods)
-- [Utilities Methods](#utilities-methods)
+- [Utilities](#utilities)
 - [Permission Methods](#permission-methods)
 - [Error Types](#error-types)
 - [Data Models](#data-models)
@@ -135,7 +137,7 @@ Notes:
 | ------------------------- | ----------------------------------------------------------------------- |
 | `initialize`              | Initializes the Inseat SDK with configuration parameters                |
 | `start`                   | Starts syncing data with POS devices via BLE mesh network               |
-| `stop`                    | Stops syncing data with POS devices and shuts down the SDK service      |
+| `stop`                    | Stops syncing data with POS devices; `start` can be called again        |
 | `syncProductData`         | Downloads and caches product data from the server API using HTTP ETag caching          |
 | `lastProductSyncDate`     | Returns the date of the last successful `syncProductData` call (200 or 304)     |
 | `lastProductUpdateDate`   | Returns the date of the last `syncProductData` call that downloaded new data (200 OK) |
@@ -153,7 +155,7 @@ Notes:
 | `observeOrders`           | Subscribes to order status updates and receives real-time notifications |
 | `cancelOrder`             | Cancels an existing order and sends information to the POS application  |
 | `fetchPromotions`         | Fetches all available promotions for the current shop                   |
-| `fetchPromotionCategories`| Fetches all available promotions for the current shop                   |
+| `fetchPromotionCategories`| Fetches all available promotion categories for the current shop         |
 | `applyPromotions`         | Calculates applied promotions based on list of cart items and selected currency  |
 | `applyPromotion`          | Tries to apply one concrete promotion based on a list of cart items and selected currency. This method is supposed to be used when constructing promotion from Promotion Builder UI flow.    |
 | `setLoggingDestinations`  | Specified the logging output destination for Inseat SDK                 |
@@ -182,7 +184,7 @@ func initialize(configuration: Configuration) async throws
   - `supportedICAOs` - Array of supported ICAO codes (uppercased)
   - `environment` - Environment type (`.test` or `.live`)
   - `shopAutoCloseTimeoutInSeconds` - Timeout for shop being open (default: 120 seconds)
-  - `orderConfirmationTimeoutDelayInSeconds` - Timeout for order operations (default: 120 seconds)
+  - `orderConfirmationTimeoutDelayInSeconds` - Time the crew has to receive an order before it is cancelled with `cancelledByTimeout` (default: 120 seconds). Exposed as the `orderConfirmationTimeoutInSeconds` property.
 
 **Return Type:** 
 
@@ -232,14 +234,14 @@ func start() async throws
 **Example:**
 
 ```swift
-try InseatAPI.shared.start()
+try await InseatAPI.shared.start()
 ```
 
 ### `stop`
 
 **Description:** 
 
-- Stops syncing data with POS devices and shuts down the SDK service.
+- Stops syncing data with POS devices. The SDK stays initialized, so `start` can be called again later without calling `initialize`.
 
 **Signature:**
 
@@ -671,6 +673,7 @@ let currencies = try await InseatAPI.shared.fetchCurrencies()
 **Description:** 
 
 - Subscribes to product updates and receives real-time notifications.
+- Only products assigned to **level 1 or level 2 categories** are returned. Products assigned to a third-level (or deeper) category are excluded.
 
 **Signature:**
 
@@ -680,7 +683,7 @@ func observeProducts(category: Category? = nil, observer: @escaping ([Product]) 
 
 **Parameters:**
 
-- `category` - optional argument to filter products by selected category and its subcategories
+- `category` - optional argument to filter products by selected category and its direct subcategories (level 2 maximum)
 - `observer` - Callback function triggered when products are updated (returns all products, not just updated ones)
 
 **Return Type:** 
@@ -706,6 +709,7 @@ productsObserver = try InseatAPI.shared.observeProducts { products in
 **Description:**
 
 - Fetches available shop products once.
+- Only products assigned to **level 1 or level 2 categories** are returned. Products assigned to a third-level (or deeper) category are excluded.
 
 **Signature:**
 
@@ -715,7 +719,7 @@ func fetchProducts(category: Category? = nil) async throws -> [Product]
 
 **Parameters:**
 
-- `category` - optional argument to filter products by selected category and its subcategories
+- `category` - optional argument to filter products by selected category and its direct subcategories (level 2 maximum)
 
 **Return Type:** 
 
@@ -771,7 +775,6 @@ let order = Inseat.Order(
     id: UUID().uuidString,
     shiftId: shiftId,
     seatNumber: seatNumber,
-    status: .placed,
     items: cart.items.map {
         Inseat.Order.Item(
             id: $0.id,
@@ -782,9 +785,7 @@ let order = Inseat.Order(
     },
     appliedPromotions: cart.appliedPromotions,
     orderCurrency: cart.currency.code,
-    totalPrice: .init(amount: cart.totalPrice),
-    createdAt: Date(),
-    updatedAt: Date()
+    totalPrice: .init(amount: cart.totalPrice)
 )
 
 try await InseatAPI.shared.createOrder(order)
@@ -978,7 +979,7 @@ func applyPromotion(promotion: Promotion, to cartItems: [CartItem], currency: St
 **Example:**
 
 ```swift
-let result = try await InseatAPI.shared.applyPromotions(promotion: promotion, to: cartItems, currency: selectedCurrency.code)
+let result = try await InseatAPI.shared.applyPromotion(promotion: promotion, to: cartItems, currency: selectedCurrency.code)
 let appliedPromotions = result.appliedPromotions
 ```
 
@@ -1013,7 +1014,7 @@ func checkPermissions(options: PermissionCheckOptions = .default) async -> Permi
 **Example:**
 
 ```swift
-let result = try await InseatAPI.shared.checkPermissions()
+let result = await InseatAPI.shared.checkPermissions()
 switch result {
 case .success:
     // all permissions granted
@@ -1217,7 +1218,7 @@ Represents an order.
 - **id**: `String` — Unique identifier for the order.
 - **shiftId**: `String` — Shift identifier.
 - **seatNumber**: `String` — Seat number.
-- **status**: `Status` — Status of the order (`placed`, `received`, `preparing`, `cancelledByPassenger`, `cancelledByCrew`, `cancelledByTimeout`, `completed`).
+- **status**: `Status` — Status of the order (`placed`, `received`, `preparing`, `cancelledByPassenger`, `cancelledByCrew`, `cancelledByTimeout`, `completed`, `refunded`).
 - **items**: `[Order.Item]` — List of order items.
 - **appliedPromotions**: `[Order.AppliedPromotion]` — List of promotions applied to the order.
 - **orderCurrency**: `String` — Currency code.

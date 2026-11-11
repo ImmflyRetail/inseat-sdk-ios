@@ -2,6 +2,25 @@
 
 All notable changes to the iOS SDK will be documented in this file.
 
+## [1.1.2]
+
+### Added
+- [Use Cases & FAQ](FAQ.md): step-by-step integration examples and answers to common questions
+- `Order` initializer without `status`, `createdAt` and `updatedAt`: the SDK sets them
+
+### Changed
+- README links to the new FAQ and has corrected method descriptions
+
+### Fixed
+- `observeShop()`/`fetchShop()` return only the shop matching the selected menu's ICAO and update when the menu changes
+- `fetchProducts()` and `observeProducts()` no longer return products of third-level (or deeper) categories, including the ones stored by a previous version, and promotions no longer use them
+
+### Deprecated
+- `Order.init(id:shiftId:seatNumber:status:items:appliedPromotions:orderCurrency:totalPrice:createdAt:updatedAt:)`: use the initializer without `status`, `createdAt` and `updatedAt`
+
+
+---
+
 ## [1.1.0]
 
 ### Added
